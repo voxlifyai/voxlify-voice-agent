@@ -22,7 +22,7 @@ app.post('/call', (req, res) => {
   twiml.say('Hold on a moment while we connect you to our AI agent.');
 
   twiml.connect().stream({
-    url: 'wss://voxlify-voice-agent-production-e3bf.up.railway.app'
+    url: 'wss://voxlify-voice-agent-production-e3bf.up.railway.app/media'
   });
 
   res.type('text/xml');
