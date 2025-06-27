@@ -11,6 +11,7 @@
     "dotenv": "^16.6.0",
     "express": "^5.1.0",
     "twilio": "^5.7.1",
-    "openai": "^4.19.0"
+    "openai": "^4.19.0",
+    "body-parser": "^1.20.2"
   }
 }
