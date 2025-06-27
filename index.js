@@ -22,9 +22,9 @@ app.get('/', (req, res) => {
 app.post('/call', async (req, res) => {
   const response = new VoiceResponse();
 
-  response.say({ voice: 'Polly.Joanna' }, "Hi there, this is Michelle with Voxlify AI. We help real estate agents close more deals with less effort by connecting them with qualified buyers and sellers. I’m calling to schedule a quick 15-minute demo. Is now a good time for a 2-minute chat?");
+  response.say({ voice: 'Polly.Salli-Neural' }, "Hi there, this is Michelle with Voxlify AI. We help real estate agents close more deals with less effort by connecting them with qualified buyers and sellers. I’m calling to schedule a quick 15-minute demo. Is now a good time for a 2-minute chat?");
   response.pause({ length: 2 });
-  response.say({ voice: 'Polly.Joanna' }, "Let’s say you said yes. I’ll now look at our next available time slots.");
+  response.say({ voice: 'Polly.Salli-Neural' }, "Let’s say you said yes. I’ll now look at our next available time slots.");
 
   try {
     await axios.post(
@@ -46,10 +46,10 @@ app.post('/call', async (req, res) => {
       }
     );
 
-    response.say({ voice: 'Polly.Joanna' }, "You’re all set! You’ll get an email and SMS confirmation shortly. Looking forward to helping you close more deals!");
+    response.say({ voice: 'Polly.Salli-Neural' }, "You’re all set! You’ll get an email and SMS confirmation shortly. Looking forward to helping you close more deals!");
   } catch (err) {
     console.error('Booking failed:', err?.response?.data || err.message);
-    response.say({ voice: 'Polly.Joanna' }, "Oops, something went wrong while booking. We’ll follow up by email.");
+    response.say({ voice: 'Polly.Salli-Neural' }, "Oops, something went wrong while booking. We’ll follow up by email.");
   }
 
   res.type('text/xml');
