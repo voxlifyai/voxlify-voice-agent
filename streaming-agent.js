@@ -1,27 +1,69 @@
+const express = require('express');
+const http = require('http');
 const WebSocket = require('ws');
+const { OpenAI } = require('openai');
+const dotenv = require('dotenv');
 
-const server = new WebSocket.Server({ port: 8080 });
+dotenv.config();
 
-server.on('connection', (ws) => {
-  console.log('🟢 WebSocket connected.');
+const app = express();
+const server = http.createServer(app);
+const wss = new WebSocket.Server({ server, path: '/media' });
 
-  ws.on('message', async (msg) => {
-    const data = JSON.parse(msg);
+const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
-    // Only handle audio data
-    if (data.event === 'media') {
-      const base64Audio = data.media.payload;
-      // Decode & process with Whisper (coming soon)
-    }
+wss.on('connection', (ws) => {
+  console.log('🔗 WebSocket client connected');
 
-    if (data.event === 'start') {
-      console.log('🚀 Stream started');
-    }
+  let audioChunks = [];
 
-    if (data.event === 'stop') {
-      console.log('🛑 Stream ended');
-    }
+  ws.on('message', async (data) => {
+    // Collect binary audio chunks
+    audioChunks.push(data);
   });
 
-  ws.on('close', () => console.log('🔌 WebSocket closed'));
+  ws.on('close', async () => {
+    console.log('❌ WebSocket connection closed, processing audio...');
+
+    const audioBuffer = Buffer.concat(audioChunks);
+
+    try {
+      // Transcribe audio using Whisper
+      const transcription = await openai.audio.transcriptions.create({
+        file: audioBuffer,
+        model: 'whisper-1'
+      });
+
+      console.log('📝 Transcribed Text:', transcription.text);
+
+      // Get GPT-4o response
+      const chatResponse = await openai.chat.completions.create({
+        model: 'gpt-4o',
+        messages: [
+          {
+            role: 'system',
+            content: 'You are Michelle, a friendly AI appointment setter for Voxlify AI.'
+          },
+          {
+            role: 'user',
+            content: transcription.text
+          }
+        ]
+      });
+
+      const reply = chatResponse.choices[0].message.content;
+      console.log('💬 GPT-4o Reply:', reply);
+
+      // Send response back to client (Twilio)
+      ws.send(reply);
+    } catch (error) {
+      console.error('Error:', error.message);
+      ws.send('Sorry, something went wrong.');
+    }
+  });
+});
+
+const PORT = process.env.PORT || 8080;
+server.listen(PORT, () => {
+  console.log(`✅ Streaming server listening on port ${PORT}`);
 });
