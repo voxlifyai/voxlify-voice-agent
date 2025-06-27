@@ -12,7 +12,10 @@ const GHL_CALENDAR_ID = process.env.GHL_CALENDAR_ID;
 
 app.post('/call', async (req, res) => {
   const response = new VoiceResponse();
-  const say = response.say({ voice: 'Polly.Joanna' });
+  response.say({ voice: 'Polly.Joanna' }, "Hi there, this is Michelle with Voxlify AI. We help real estate agents close more deals with less effort by connecting them with qualified buyers and sellers. I’m calling to schedule a quick 15-minute demo. Is now a good time for a 2-minute chat?");
+response.pause({ length: 2 });
+response.say({ voice: 'Polly.Joanna' }, "Let’s say you said yes. I’ll now look at our next available time slots.");
+
 
   say.say("Hi there, this is Michelle with Voxlify AI. We help real estate agents close more deals with less effort by connecting them with qualified buyers and sellers. I’m calling to schedule a quick 15-minute demo. Is now a good time for a 2-minute chat?");
   say.pause({ length: 2 });
