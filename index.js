@@ -30,7 +30,7 @@ app.post('/call', (req, res) => {
 });
 
 // Server listener
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
   console.log(`✅ AI voice agent running on port ${PORT}`);
 });
