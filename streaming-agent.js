@@ -12,6 +12,12 @@ const wss = new WebSocket.Server({ server, path: '/media' });
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
+// Optional health check route
+app.get('/', (req, res) => {
+  res.send('🧠 Streaming AI Agent is live');
+});
+
+// Handle WebSocket connections
 wss.on('connection', (ws) => {
   console.log('🔗 WebSocket client connected');
 
@@ -24,11 +30,10 @@ wss.on('connection', (ws) => {
 
   ws.on('close', async () => {
     console.log('❌ WebSocket connection closed, processing audio...');
-
     const audioBuffer = Buffer.concat(audioChunks);
 
     try {
-      // Transcribe audio using Whisper
+      // Transcribe with Whisper
       const transcription = await openai.audio.transcriptions.create({
         file: audioBuffer,
         model: 'whisper-1'
@@ -36,7 +41,7 @@ wss.on('connection', (ws) => {
 
       console.log('📝 Transcribed Text:', transcription.text);
 
-      // Get GPT-4o response
+      // Respond with GPT-4o
       const chatResponse = await openai.chat.completions.create({
         model: 'gpt-4o',
         messages: [
@@ -54,7 +59,6 @@ wss.on('connection', (ws) => {
       const reply = chatResponse.choices[0].message.content;
       console.log('💬 GPT-4o Reply:', reply);
 
-      // Send response back to client (Twilio)
       ws.send(reply);
     } catch (error) {
       console.error('Error:', error.message);
